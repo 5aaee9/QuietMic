@@ -8,7 +8,7 @@ public sealed class AppSettings
 
     public string? ModelId { get; set; } = "dpdfnet2_48khz_hr";
 
-    public double Strength { get; set; } = 0.9;
+    public double Strength { get; set; } = 1.0;
 
     public bool MonitorEnabled { get; set; }
 

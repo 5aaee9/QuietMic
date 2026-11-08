@@ -15,6 +15,7 @@ public sealed class AudioEngine : IDisposable
 
     private readonly IDenoiser _denoiser;
     private readonly float _outputGain;
+    private readonly HighPassFilter _highPass = new(ProcessingRate, 90);
     private WasapiCapture? _capture;
     private MMDevice? _micDevice;
     private BufferedWaveProvider? _captureBuffer;
@@ -23,7 +24,7 @@ public sealed class AudioEngine : IDisposable
     private DeviceSink? _monitor;
     private Thread? _worker;
     private volatile bool _running;
-    private float _wet = 0.9f;
+    private float _wet = 1f;
     private float _inputSmooth;
     private float _outputSmooth;
     private long _lastLevelTicks;
@@ -132,6 +133,8 @@ public sealed class AudioEngine : IDisposable
             {
                 break;
             }
+
+            _highPass.Process(dry);
 
             try
             {

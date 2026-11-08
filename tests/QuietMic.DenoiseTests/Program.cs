@@ -88,6 +88,34 @@ if (args.Length >= 4 && args[0] == "wav")
     return;
 }
 
+if (args.Length >= 1 && args[0] == "hp")
+{
+    double Rms(float[] values, int from, int count)
+    {
+        var sum = 0.0;
+        for (var i = from; i < from + count; i++) sum += values[i] * values[i];
+        return Math.Sqrt(sum / count);
+    }
+
+    // 两级 90 Hz 高通：直流应被完全去掉，60 Hz 明显衰减，1 kHz 基本不变。
+    foreach (var frequency in new[] { 0d, 60d, 1000d })
+    {
+        var filter = new QuietMic.Audio.HighPassFilter(48_000, 90);
+        var signal = new float[24_000];
+        for (var i = 0; i < signal.Length; i++)
+        {
+            signal[i] = frequency == 0 ? 0.5f : (float)(0.5 * Math.Sin(2 * Math.PI * frequency * i / 48_000));
+        }
+
+        var before = Rms(signal, 12_000, 12_000);
+        filter.Process(signal);
+        var after = Rms(signal, 12_000, 12_000);
+        Console.WriteLine($"{frequency,5} Hz: {20 * Math.Log10(after / before):0.0} dB");
+    }
+
+    return;
+}
+
 var modelsDirectory = args.Length > 0
     ? args[0]
     : Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", ".research", "models"));

@@ -42,7 +42,7 @@ public static class ModelCatalog
                 new ModelFile("erb_dec.onnx", DeepFilterNetBase + "erb_dec.onnx", 3_292_397),
                 new ModelFile("df_dec.onnx", DeepFilterNetBase + "df_dec.onnx", 3_340_803)
             ],
-            OutputGain: 1.9f)
+            OutputGain: 3.9f)
     ];
 
     public static DenoiseModel? Find(string? id)
