@@ -23,16 +23,16 @@ public static class ModelCatalog
     public static IReadOnlyList<DenoiseModel> All { get; } =
     [
         new DenoiseModel(
-            "dpdfnet2_48khz_hr",
-            "DPDFNet 2 · 48 kHz",
-            "实时性最好，日常通话首选",
-            [new ModelFile("dpdfnet2_48khz_hr.onnx", DpdfNetBase + "dpdfnet2_48khz_hr.onnx", 10_493_337)],
-            Recommended: true),
-        new DenoiseModel(
             "dpdfnet8_48khz_hr",
             "DPDFNet 8 · 48 kHz",
-            "更大的网络，降噪更彻底，CPU 占用更高",
-            [new ModelFile("dpdfnet8_48khz_hr.onnx", DpdfNetBase + "dpdfnet8_48khz_hr.onnx", 14_857_107)]),
+            "默认。更大的网络，停顿处残留更少",
+            [new ModelFile("dpdfnet8_48khz_hr.onnx", DpdfNetBase + "dpdfnet8_48khz_hr.onnx", 14_857_107)],
+            Recommended: true),
+        new DenoiseModel(
+            "dpdfnet2_48khz_hr",
+            "DPDFNet 2 · 48 kHz",
+            "小网络，CPU 占用最低，老机器可用",
+            [new ModelFile("dpdfnet2_48khz_hr.onnx", DpdfNetBase + "dpdfnet2_48khz_hr.onnx", 10_493_337)]),
         new DenoiseModel(
             "deepfilternet3",
             "DeepFilterNet 3",
@@ -42,7 +42,7 @@ public static class ModelCatalog
                 new ModelFile("erb_dec.onnx", DeepFilterNetBase + "erb_dec.onnx", 3_292_397),
                 new ModelFile("df_dec.onnx", DeepFilterNetBase + "df_dec.onnx", 3_340_803)
             ],
-            OutputGain: 3.9f)
+            OutputGain: 1f)
     ];
 
     public static DenoiseModel? Find(string? id)

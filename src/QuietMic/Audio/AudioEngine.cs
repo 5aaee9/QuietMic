@@ -16,6 +16,7 @@ public sealed class AudioEngine : IDisposable
     private readonly IDenoiser _denoiser;
     private readonly float _outputGain;
     private readonly HighPassFilter _highPass = new(ProcessingRate, 90);
+    private readonly ResidualStage _stage;
     private WasapiCapture? _capture;
     private MMDevice? _micDevice;
     private BufferedWaveProvider? _captureBuffer;
@@ -33,6 +34,7 @@ public sealed class AudioEngine : IDisposable
     {
         _denoiser = denoiser;
         _outputGain = outputGain;
+        _stage = new ResidualStage(outputGain);
     }
 
     public event Action<double>? InputLevelChanged;
@@ -150,10 +152,20 @@ public sealed class AudioEngine : IDisposable
                 }
             }
 
+            if (_outputGain != 1f)
+            {
+                for (var i = 0; i < hop; i++)
+                {
+                    wetFrame[i] *= _outputGain;
+                }
+            }
+
+            _stage.Process(wetFrame, dry);
+
             var wet = Bypass ? 0f : _wet;
             for (var i = 0; i < hop; i++)
             {
-                mixed[i] = Math.Clamp(dry[i] + (wetFrame[i] * _outputGain - dry[i]) * wet, -1f, 1f);
+                mixed[i] = Math.Clamp(dry[i] + (wetFrame[i] - dry[i]) * wet, -1f, 1f);
             }
 
             _output?.Write(mixed, hop);

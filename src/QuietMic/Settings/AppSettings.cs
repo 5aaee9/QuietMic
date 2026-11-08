@@ -6,7 +6,7 @@ public sealed class AppSettings
 {
     public string? MicrophoneId { get; set; }
 
-    public string? ModelId { get; set; } = "dpdfnet2_48khz_hr";
+    public string? ModelId { get; set; } = "dpdfnet8_48khz_hr";
 
     public double Strength { get; set; } = 1.0;
 

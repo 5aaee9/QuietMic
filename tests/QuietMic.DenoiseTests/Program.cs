@@ -88,6 +88,12 @@ if (args.Length >= 4 && args[0] == "wav")
     return;
 }
 
+if (args.Length >= 5 && args[0] == "post")
+{
+    WavMode.PostProcess(args[1], args[2], int.Parse(args[3]), args[4]);
+    return;
+}
+
 if (args.Length >= 1 && args[0] == "hp")
 {
     double Rms(float[] values, int from, int count)

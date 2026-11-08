@@ -39,6 +39,35 @@ internal static class WavMode
         Console.WriteLine($"wrote {outputPath} ({output.Count} samples)");
     }
 
+    /// <summary>把模型输出按引擎里的收尾处理（增益补偿 + 下行扩展）走一遍，用于量测。</summary>
+    public static void PostProcess(string wetPath, string dryPath, int lag, string outputPath)
+    {
+        var (wet, wetRate) = ReadMono(wetPath);
+        var (dry, dryRate) = ReadMono(dryPath);
+        if (wetRate != 48_000 || dryRate != 48_000)
+        {
+            throw new InvalidOperationException("需要 48 kHz 输入");
+        }
+
+        var hop = 480;
+        var stage = new QuietMic.Audio.ResidualStage();
+        var count = Math.Min(dry.Length, wet.Length - lag) / hop * hop;
+        var frame = new float[hop];
+        var reference = new float[hop];
+        var output = new float[count];
+
+        for (var offset = 0; offset < count; offset += hop)
+        {
+            Array.Copy(wet, offset + lag, frame, 0, hop);
+            Array.Copy(dry, offset, reference, 0, hop);
+            stage.Process(frame, reference);
+            Array.Copy(frame, 0, output, offset, hop);
+        }
+
+        WriteMono(outputPath, output, 48_000);
+        Console.WriteLine($"wrote {outputPath} ({output.Length} samples)");
+    }
+
     public static void Play(string path, string deviceName)
     {
         var (samples, rate) = ReadMono(path);
