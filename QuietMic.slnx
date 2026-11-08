@@ -2,4 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/QuietMic/QuietMic.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/QuietMic.DenoiseTests/QuietMic.DenoiseTests.csproj" />
+  </Folder>
 </Solution>

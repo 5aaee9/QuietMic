@@ -1,0 +1,32 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build
+        run: dotnet build QuietMic.slnx -c Release
+
+      - name: Publish
+        run: dotnet publish src/QuietMic/QuietMic.csproj -c Release -r win-x64 --self-contained false -o publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuietMic-win-x64
+          path: publish/
+          retention-days: 1
+          if-no-files-found: error
